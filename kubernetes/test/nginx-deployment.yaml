@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: onlysands-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: static-storage
+              mountPath: /app/staticfiles
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+            limits:
+              memory: "512Mi"
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config
+        - name: static-storage
+          persistentVolumeClaim:
+            claimName: django-pvc
