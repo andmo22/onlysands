@@ -27,3 +27,10 @@ exec:
 	fi
 
 shell: exec
+
+push:
+	docker tag onlysands-app:latest andmo22/onlysands-app:latest
+	docker push andmo22/onlysands-app:latest
+	
+deploy-test:
+	kubectl delete pod -l 'app in (django)' --namespace onlysands-test

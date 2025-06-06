@@ -22,6 +22,8 @@ spec:
               subPath: nginx.conf
             - name: static-storage
               mountPath: /app/staticfiles
+            - name: media-storage
+              mountPath: /app/media
           ports:
             - containerPort: 80
           resources:
@@ -36,3 +38,6 @@ spec:
         - name: static-storage
           persistentVolumeClaim:
             claimName: django-pvc
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: media-pvc

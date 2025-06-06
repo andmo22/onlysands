@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="text-align:center; margin-top: 2rem;">
+        <h1>{{ object.name }}</h1>
+        <p style="font-size: 2rem;">
+			{% with total=7 %}
+				{% for i in "0123456"|make_list %}
+					{% if forloop.counter <= object.rating %}
+						★
+					{% else %}
+						☆
+					{% endif %}
+				{% endfor %}
+			{% endwith %}
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="map"></div>
+
+<script>
+    var map = L.map('map', { zoomControl: false }).setView([-33.8688, 151.2093], 12);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB'
+    }).addTo(map);
+
+	var beachBallIcon = L.divIcon({
+		className: 'custom-beach-ball',
+		html: '🌞',
+		iconSize: [32, 32],
+		iconAnchor: [8, 0]
+	});
+
+    fetch("{% url 'beach-list' %}")
+        .then(response => response.json())
+        .then(beaches => {
+            var markers = beaches.map(beach => 
+                L.marker([beach.latitude, beach.longitude], { icon: beachBallIcon })
+				.bindPopup(`
+					<div style="text-align:center;">
+						<a href="/beaches/${beach.id}/" target="_blank" style="text-decoration:none; font-weight:bold;">
+							${beach.name}
+						</a><br/>
+						${'★'.repeat(beach.rating)}${'☆'.repeat(7 - beach.rating)}
+					</div>
+				`)
+                 .addTo(map)
+            );
+
+            if (markers.length > 0) {
+                var group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        });
+</script>
+
+
+{% endblock %}
+

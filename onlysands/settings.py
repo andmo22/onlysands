@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,15 +26,15 @@ if (SECRET_KEY := os.getenv("DJANGO_SECRET_KEY")):
     POSTGRES_HOST = os.getenv("POSTGRES_HOST")
     
     ALLOWED_HOSTS = ['onlysands-test.andrewkmorrison.com']
+    CSRF_TRUSTED_ORIGINS = ['https://onlysands-test.andrewkmorrison.com']
+
     
     DEBUG = True
+    LIVE = True
     
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     
 else:
     # Quick-start development settings - unsuitable for production
@@ -49,9 +52,13 @@ else:
 
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
+    LIVE = False
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media") 
 
 # Application definition
 
@@ -62,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'onlysands',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +157,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("SMTP_ENDPOINT")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("SMTP_USER")
+EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD")
+DEFAULT_FROM_EMAIL = "info@andrewkmorrison.com"
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+

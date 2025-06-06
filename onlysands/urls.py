@@ -16,7 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
+import onlysands.views as views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
+    path('register/', views.register, name='register'),
+    path('confirm/<str:token>/', views.confirm_email, name='confirm_email'),
+    path('logout/', views.logout_view, name='logout'),
+    path('login/', views.login_view, name='login'),
+    path("api/beaches/", views.beach_list, name="beach-list"),
+    path('beaches/<int:pk>/', views.BeachDetailView.as_view(), name='beach-detail'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

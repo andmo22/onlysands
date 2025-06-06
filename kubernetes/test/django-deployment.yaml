@@ -49,10 +49,30 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_HOST
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: SMTP_USER
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: SMTP_PASSWORD
+            - name: SMTP_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: SMTP_ENDPOINT
           volumeMounts:
             - name: static-storage
               mountPath: /app/staticfiles
+            - name: media-storage
+              mountPath: /app/media
       volumes:
         - name: static-storage
           persistentVolumeClaim:
             claimName: django-pvc
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: media-pvc
