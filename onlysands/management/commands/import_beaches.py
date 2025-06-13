@@ -1,7 +1,9 @@
 import csv
-import json
+
 from django.core.management.base import BaseCommand
+
 from onlysands.models import Beach
+
 
 class Command(BaseCommand):
     help = "Import beaches from a CSV file"
@@ -17,11 +19,11 @@ class Command(BaseCommand):
 
             for row in reader:
                 # Convert string fields that should be lists
-                row["beach_type"] = row["beach_type"].split(', ')
-                row["tags"] = row["tags"].split(', ')
-                row["vibe"] = row["vibe"].split(', ')
-                row["related_walks"] = row["related_walks"].split(', ')
-                row["other_names"] = row["other_names"].split(', ')
+                row["beach_type"] = row["beach_type"].split(", ")
+                row["tags"] = row["tags"].split(", ")
+                row["vibe"] = row["vibe"].split(", ")
+                row["related_walks"] = row["related_walks"].split(", ")
+                row["other_names"] = row["other_names"].split(", ")
 
                 Beach.objects.create(
                     name=row["\ufeffname"],
