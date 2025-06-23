@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div style="text-align:center; margin-top: 2rem;">
-        <h1>{{ object.name }}</h1>
-        <p style="font-size: 2rem;">
+    <div style="text-align:center; margin-top: 6rem;">
+        <h1> 🌞 {{ object.name }} 🌞 </h1>
+		
+        <p style="margin-top: 1rem; font-size: 1.25rem;">
+            <strong>Location:</strong> {{ object.location }}
+        </p>
+		
+        <p style="font-size: 1.25rem;">
+            <strong>Suburb:</strong> {{ object.suburb }}
+        </p>
+		
+        <p style="margin-top: 0.5rem; font-size: 2rem;">
 			{% with total=7 %}
 				{% for i in "0123456"|make_list %}
 					{% if forloop.counter <= object.rating %}
@@ -14,5 +23,83 @@
 				{% endfor %}
 			{% endwith %}
         </p>
+		
+		{% if object.images.all %}
+		<div class="carousel">
+			<button class="carousel-btn left" onclick="moveSlide(-1)">‹</button>
+			<div class="carousel-track">
+				{% for img in object.images.all %}
+					<img src="{{ img.image.url }}" alt="Beach Image" />
+				{% endfor %}
+			</div>
+			<button class="carousel-btn right" onclick="moveSlide(1)">›</button>
+		</div>
+		{% endif %}
+		
+		<div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
+			{% for tag in object.beach_type %}
+				{% if tag %}
+					<div style="padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 20px; background-color: #f0f0f0;">
+						{{ tag }}
+					</div>
+				{% endif %}
+			{% endfor %}
+			{% for tag in object.tags %}
+				{% if tag %}
+					<div style="padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 20px; background-color: #f0f0f0;">
+						{{ tag }}
+					</div>
+				{% endif %}
+			{% endfor %}
+			{% for tag in object.vibe %}
+				{% if tag %}
+					<div style="padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 20px; background-color: #f0f0f0;">
+						{{ tag }}
+					</div>
+				{% endif %}
+			{% endfor %}
+			{% for tag in object.related_walks %}
+				{% if tag %}
+					<div style="padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 20px; background-color: #f0f0f0;">
+						{{ tag }}
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+		
+		{% if object.review %}
+			<div style="margin-top: 2rem; margin-bottom: 2rem; display: flex; justify-content: center;">
+				<div style="
+					max-width: 700px;
+					padding: 1.5rem;
+					border: 1px solid #ccc;
+					border-radius: 12px;
+					background-color: #f9f9f9;
+					font-size: 1.1rem;
+					line-height: 1.6;
+					text-align: center;
+					box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+				">
+					<h3 style="margin-top: 0; color: #333;">Our Review</h3>
+					<p>{{ object.review }}</p>
+				</div>
+			</div>
+		{% endif %}
+
     </div>
+	
+<script>
+let index = 0;
+
+function moveSlide(step) {
+    const track = document.querySelector('.carousel-track');
+    const container = document.querySelector('.carousel');
+    const images = track.children;
+    const total = images.length;
+    const width = container.clientWidth;
+
+    index = (index + step + total) % total;
+    track.style.transform = `translateX(-${index * width}px)`;
+}
+</script>
 {% endblock %}
