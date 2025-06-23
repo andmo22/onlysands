@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 
 class Beach(models.Model):
@@ -25,6 +26,9 @@ class Beach(models.Model):
 
     def __str__(self):
         return self.name
+        
+    def get_absolute_url(self):
+        return reverse("beach-detail", kwargs={"pk": self.pk})
 
 
 class BeachImage(models.Model):
@@ -33,6 +37,25 @@ class BeachImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.beach.name}"
+        
+class Review(models.Model):
+    beach = models.ForeignKey(Beach, related_name='reviews', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
+    rating = models.IntegerField(
+        null=False, choices=[(i, i) for i in range(8)]
+    )  # Choices 0-7
+    text = models.TextField(max_length=3000, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_public = models.BooleanField(default=True)
+    was_edited = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('beach', 'user')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Review by {self.user} on {self.beach.name}"
 
 
 class UserProfile(models.Model):

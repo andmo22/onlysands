@@ -1,16 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now
-from django.views.generic import DetailView
+from django.views.generic import DetailView, UpdateView
 
 from onlysands.settings import LIVE
 
-from .forms import RegisterForm
-from .models import Beach, UserProfile
+from .forms import RegisterForm, ReviewForm
+from .models import Beach, UserProfile, Review
 
 
 def home(request):
@@ -100,6 +102,64 @@ def beach_list(request):
     return JsonResponse(list(beaches), safe=False)
 
 
+
 class BeachDetailView(DetailView):
     model = Beach
     template_name = "beach_detail.html"
+    context_object_name = "object"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        beach = self.object
+        user = self.request.user
+
+        if user.is_authenticated:
+            context['user_review'] = Review.objects.filter(user=user, beach=beach).first()
+            if not context['user_review']:
+                context['review_form'] = ReviewForm()
+            context['other_reviews'] = Review.objects.filter(beach=beach).exclude(user=user)
+        else:
+            context['user_review'] = None
+            context['other_reviews'] = Review.objects.filter(beach=beach)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        beach = self.object
+
+        if not request.user.is_authenticated:
+            return redirect("login")
+
+        if Review.objects.filter(user=request.user, beach=beach).exists():
+            return redirect("beach-detail", pk=beach.pk)
+
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.beach = beach
+            review.save()
+            return redirect("beach-detail", pk=beach.pk)
+
+        context = self.get_context_data()
+        context['review_form'] = form
+        return self.render_to_response(context)
+
+class EditReviewView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = "edit_review.html"
+
+    def get_success_url(self):
+        return self.object.beach.get_absolute_url()
+
+    def test_func(self):
+        return self.get_object().user == self.request.user
+        
+@login_required
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk, user=request.user)
+    beach = review.beach
+    review.delete()
+    return redirect('beach-detail', pk=beach.pk)

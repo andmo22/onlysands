@@ -31,6 +31,8 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("api/beaches/", views.beach_list, name="beach-list"),
     path("beaches/<int:pk>/", views.BeachDetailView.as_view(), name="beach-detail"),
+    path('review/<int:pk>/edit/', views.EditReviewView.as_view(), name='edit-review'),
+    path('review/<int:pk>/delete/', views.delete_review, name='delete-review'),
 ]
 
 if settings.DEBUG:

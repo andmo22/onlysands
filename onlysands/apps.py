@@ -6,4 +6,4 @@ class OnlysandsConfig(AppConfig):
     name = "onlysands"
 
     def ready(self):
-        pass
+        import onlysands.signals

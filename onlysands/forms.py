@@ -4,6 +4,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from .models import Review
+
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -65,3 +67,13 @@ class RegisterForm(forms.ModelForm):
             raise ValidationError("Passwords do not match.")
 
         return cleaned_data
+        
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'text']
+        widgets = {
+            'rating': forms.NumberInput(attrs={'min': 1, 'max': 7}),
+            'text': forms.Textarea(attrs={'rows': 4}),
+        }

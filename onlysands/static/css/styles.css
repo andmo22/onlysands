@@ -129,6 +129,11 @@ form input:focus {
     background: #ffffff;
 }
 
+.inline-form {
+    all: unset;
+    display: inline;
+}
+
 button {
     padding: 0.8em;
     background: black;

@@ -2,7 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Beach, BeachImage, UserProfile
+from .models import Beach, BeachImage, UserProfile, Review
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('beach', 'user', 'created_at', 'is_public', 'was_edited')
+    list_filter = ('beach', 'is_public', 'was_edited')
+    search_fields = ('user__username', 'beach__name', 'text')
+    readonly_fields = ('created_at', 'updated_at')
 
 
 class BeachImageInline(admin.TabularInline):

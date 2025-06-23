@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 3rem auto;">
+    <h2>Edit Your Review for {{ object.beach.name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Review</button>
+    </form>
+</div>
+{% endblock %}
